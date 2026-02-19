@@ -1,0 +1,22 @@
+using Contracts;
+using MassTransit;
+using MongoDB.Entities;
+using SearchService.Models;
+
+namespace SearchService.Consumers;
+
+public class AuctionDeletedConsumer : IConsumer<AuctionDeleted>
+{
+    public async Task Consume(ConsumeContext<AuctionDeleted> context)
+    {
+        Console.WriteLine("--> Consuming auction deleted: " + context.Message.Id);
+
+        var result = await DB.DeleteAsync<Item>(context.Message.Id);
+        if (!result.IsAcknowledged)
+        {
+            Console.WriteLine($"Failed to delete item with id {context.Message.Id}");
+            throw new Exception($"Failed to delete item with id {context.Message.Id}");
+        }
+        Console.WriteLine($"Successfully deleted item with id {context.Message.Id}");
+    }
+}
