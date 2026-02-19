@@ -6,6 +6,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Contracts;
 using MassTransit;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -52,11 +53,13 @@ public class AuctionsController: ControllerBase
         return _mapper.Map<AuctionDto>(auction);
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult<AuctionDto>> CreateAuction(CreateAuctionDto createAuctionDto)
     {
         var auction = _mapper.Map<Auction>(createAuctionDto);
         auction.Id = Guid.NewGuid();
+        auction.Seller = User.Identity.Name; // Assuming the username is used as the seller identifier
 
         // Publish the creation event
         var auctionDto = _mapper.Map<AuctionDto>(auction);
@@ -69,6 +72,7 @@ public class AuctionsController: ControllerBase
         return CreatedAtAction(nameof(GetAuction), new { id = auction.Id }, auctionDto);
     }
 
+    [Authorize]
     [HttpPut("{id}")]
     public async Task<ActionResult> UpdateAuction(Guid id, UpdateAuctionDto updateAuctionDto)
     {
@@ -76,6 +80,11 @@ public class AuctionsController: ControllerBase
         if (auction == null)
         {
             return NotFound();
+        }
+
+        if(auction.Seller != User.Identity.Name)
+        {
+            return Forbid();
         }
 
         // Update only non-null fields
@@ -95,6 +104,7 @@ public class AuctionsController: ControllerBase
         return Ok();
     }
 
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteAuction(Guid id)
     {
@@ -102,6 +112,11 @@ public class AuctionsController: ControllerBase
         if (auction == null)
         {
             return NotFound();
+        }
+        
+        if(auction.Seller != User.Identity.Name)
+        {
+            return Forbid();
         }
 
         _context.Auctions.Remove(auction);
