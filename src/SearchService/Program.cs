@@ -23,9 +23,9 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumers(Assembly.GetExecutingAssembly());
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host("localhost", "/", h => {
-                        h.Username("guest");
-                        h.Password("guest");
+        cfg.Host(builder.Configuration["RabbitMq:Host"], "/", h => {
+                        h.Username(builder.Configuration.GetValue("RabbitMq:Username", "guest"));
+                        h.Password(builder.Configuration.GetValue("RabbitMq:Password", "guest"));
                     });
 
         cfg.ReceiveEndpoint("search-auction-created", e =>
