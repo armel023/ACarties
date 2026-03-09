@@ -1,0 +1,27 @@
+// import { AuctionItem } from "./AuctionItem";
+import CountDownTimer from "./CountDownTimer";
+import CardImage from "./CardImage";
+import { Auction } from "@/types";
+
+type AuctionCardProps = {
+  auction: Auction;
+};
+
+export default function AuctionCard({ auction }: AuctionCardProps) {
+  return (
+    <a href="#">
+      <div className="relative w-full bg-gray-200 aspect-[16/10] rounded-lg overflow-hidden ">
+        <CardImage imageUrl={auction.imageUrl} />
+        <div className="absolute bottom-2 left-2">
+          <CountDownTimer endTime={auction.auctionEnd} />
+        </div>
+      </div>
+      <div className="flex justify-between items-center mt-4">
+        <h3 className="text-gray-700">
+          {auction.make} {auction.model}
+        </h3>
+        <p className="text-sm font-semibold">{auction.year}</p>
+      </div>
+    </a>
+  );
+}
