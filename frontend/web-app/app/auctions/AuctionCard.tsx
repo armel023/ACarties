@@ -2,6 +2,7 @@
 import CountDownTimer from "./CountDownTimer";
 import CardImage from "./CardImage";
 import { Auction } from "@/types";
+import Link from "next/link";
 
 type AuctionCardProps = {
   auction: Auction;
@@ -9,7 +10,7 @@ type AuctionCardProps = {
 
 export default function AuctionCard({ auction }: AuctionCardProps) {
   return (
-    <a href="#">
+    <Link href={`/auctions/details/${auction.id}`}>
       <div className="relative w-full bg-gray-200 aspect-[16/10] rounded-lg overflow-hidden ">
         <CardImage imageUrl={auction.imageUrl} />
         <div className="absolute bottom-2 left-2">
@@ -22,6 +23,6 @@ export default function AuctionCard({ auction }: AuctionCardProps) {
         </h3>
         <p className="text-sm font-semibold">{auction.year}</p>
       </div>
-    </a>
+    </Link>
   );
 }

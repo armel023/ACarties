@@ -28,7 +28,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.accessToken = account.access_token;
       }
       if (profile) {
-        token.username = profile.name ?? "unknown";
+        token.username = profile.username ?? "unknown";
       }
       return token;
     },
