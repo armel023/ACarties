@@ -1,17 +1,25 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
+  "version": "0.2.0",
+  "configurations": [
     {
-        "name": "Containers .NET Attach (Preview)",
-        "type": "docker",
-        "request": "attach",
-        "platform": "netCore",
-        "sourceFileMap": {
-            "/src": "${workspaceFolder}"
-        }
+      "name": "AuctionService",
+      "type": "coreclr",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/AuctionService/bin/Debug/net10.0/AuctionService.dll",
+      "cwd": "${workspaceFolder}/src/AuctionService"
+    },
+    {
+      "name": "BiddingService",
+      "type": "coreclr",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/BiddingService/bin/Debug/net10.0/BiddingService.dll",
+      "cwd": "${workspaceFolder}/src/BiddingService"
     }
-    ]
+  ],
+  "compounds": [
+    {
+      "name": "Run All Services",
+      "configurations": ["AuctionService", "BiddingService"]
+    }
+  ]
 }
