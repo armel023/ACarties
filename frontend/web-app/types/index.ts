@@ -5,7 +5,7 @@ export type PageResult<T> = {
 };
 
 export type Auction = {
-  reservePrice?: number;
+  reservePrice: number;
   seller: string;
   winner?: string;
   soldAmount?: number;
@@ -22,3 +22,25 @@ export type Auction = {
   imageUrl: string;
   id: string;
 };
+
+export type Bid = {
+  id: string;
+  auctionId: string;
+  bidder: string;
+  bidTime: string;
+  amount: number;
+  status: string;
+};
+
+export type ResponseError = {
+  status: number;
+  message: string;
+};
+
+export type AuctionFinished = {
+  itemSold: boolean
+  auctionId: string
+  winner?: string;
+  seller: string;
+  amount?: number;
+}

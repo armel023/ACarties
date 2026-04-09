@@ -3,6 +3,7 @@ import CountDownTimer from "./CountDownTimer";
 import CardImage from "./CardImage";
 import { Auction } from "@/types";
 import Link from "next/link";
+import CurrentBid from "./CurrentBid";
 
 type AuctionCardProps = {
   auction: Auction;
@@ -15,6 +16,12 @@ export default function AuctionCard({ auction }: AuctionCardProps) {
         <CardImage imageUrl={auction.imageUrl} />
         <div className="absolute bottom-2 left-2">
           <CountDownTimer endTime={auction.auctionEnd} />
+        </div>
+        <div className="absolute top-2 right-2">
+          <CurrentBid
+            amount={auction.currentHighestBid}
+            reservePrice={auction.reservePrice}
+          />
         </div>
       </div>
       <div className="flex justify-between items-center mt-4">

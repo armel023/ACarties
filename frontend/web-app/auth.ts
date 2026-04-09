@@ -18,12 +18,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return !!auth;
     },
     async jwt({ token, user, account, profile }) {
-      console.log("JWT callback called with ", {
-        token,
-        user,
-        account,
-        profile,
-      });
       if (account && account.access_token) {
         token.accessToken = account.access_token;
       }
@@ -33,10 +27,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      console.log("Session callback called with ", {
-        session,
-        token,
-      });
       if (token) {
         session.user.username = token.username as string;
         session.accessToken = token.accessToken as string;

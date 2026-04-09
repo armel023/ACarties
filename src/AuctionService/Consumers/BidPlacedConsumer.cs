@@ -17,7 +17,7 @@ public class BidPlacedConsumer : IConsumer<BidPlaced>
     {
         Console.WriteLine("--> Consuming bid placed: " + context.Message.Id);
         var auction = await _dbContext.Auctions.FindAsync(Guid.Parse(context.Message.AuctionId));
-        if(context.Message.BidStatus.Contains("Accepted") 
+        if(context.Message.Status.Contains("Accepted") 
             && context.Message.Amount > auction.CurrentHighestBid)
         {
             auction.CurrentHighestBid = context.Message.Amount;

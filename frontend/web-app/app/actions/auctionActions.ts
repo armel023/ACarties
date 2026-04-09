@@ -1,6 +1,6 @@
 "use server";
 import { fetchWrapper } from "@/lib/fetchWrapper";
-import { Auction, PageResult } from "@/types";
+import { Auction, Bid, PageResult } from "@/types";
 import { FieldValues } from "react-hook-form";
 
 export async function getData(query: string): Promise<PageResult<Auction>> {
@@ -35,4 +35,12 @@ export async function updateAuction(id: string, data: FieldValues) {
 
 export async function deleteAuction(id: string) {
   return fetchWrapper.del(`auctions/${id}`);
+}
+
+export async function getBidsForAuction(auctionId: string) {
+  return fetchWrapper.get(`bids/${auctionId}`);
+}
+
+export async function placeBidForAuction(auctionId: string, amount: number) {
+  return fetchWrapper.post(`bids?auctionId=${auctionId}&amount=${amount}`, {});
 }
