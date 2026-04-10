@@ -3,20 +3,21 @@ import { useAuctionStore } from "@/hooks/useAuctionStore";
 import { useBidStore } from "@/hooks/useBidStore";
 import { Auction, AuctionFinished, Bid } from "@/types";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
-import { User } from "next-auth";
 import { useParams } from "next/navigation";
 import { ReactNode, useCallback, useEffect, useRef } from "react";
 import AuctionCreatedToast from "../components/AuctionCreatedToast";
 import toast from "react-hot-toast";
 import { getDetailedAuction } from "../actions/auctionActions";
 import AuctionFinishedToast from "../components/AuctionFinishedToast";
+import { useSession } from "next-auth/react";
 
 type Props = {
   children: ReactNode;
-  user: User | null;
 };
 
-export default function SignalRProvider({ children, user }: Props) {
+export default function SignalRProvider({ children }: Props) {
+  const session = useSession();
+  const user = session.data?.user || null;  
   const connection = useRef<HubConnection | null>(null);
   const setCurrentPrice = useAuctionStore((state) => state.setCurrentPrice);
   const addBid = useBidStore((state) => state.addBid);
@@ -37,29 +38,44 @@ export default function SignalRProvider({ children, user }: Props) {
     [setCurrentPrice, addBid, params.id],
   );
 
-  const handleAuctionCreated = useCallback((auction: Auction) => {
-    if(user?.name !== auction.seller) {
-      return toast(<AuctionCreatedToast auction={auction} />, {
-        duration: 10000,
-      });
-    }
-  }, [user]);
+  const handleAuctionCreated = useCallback(
+    (auction: Auction) => {
+      if (user?.name !== auction.seller) {
+        return toast(<AuctionCreatedToast auction={auction} />, {
+          duration: 10000,
+        });
+      }
+    },
+    [user],
+  );
 
-  const handleAuctionFinished = useCallback((finishedAuction: AuctionFinished) => {
-    const auction = getDetailedAuction(finishedAuction.auctionId);
-    return toast.promise(auction, {
-      loading: "Loading auction details...",
-      success: (auction) => {
-        return <AuctionFinishedToast auction={auction} finishedAuction={finishedAuction} />;
-      },
-      error: () => "Error loading auction details",
-    }, {success: {duration: 10000, icon:null}})
-  }, []);
+  const handleAuctionFinished = useCallback(
+    (finishedAuction: AuctionFinished) => {
+      const auction = getDetailedAuction(finishedAuction.auctionId);
+      return toast.promise(
+        auction,
+        {
+          loading: "Loading auction details...",
+          success: (auction) => {
+            return (
+              <AuctionFinishedToast
+                auction={auction}
+                finishedAuction={finishedAuction}
+              />
+            );
+          },
+          error: () => "Error loading auction details",
+        },
+        { success: { duration: 10000, icon: null } },
+      );
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!connection.current) {
       connection.current = new HubConnectionBuilder()
-        .withUrl("http://localhost:6001/notifications")
+        .withUrl(process.env.NEXT_PUBLIC_NOTIFICATIONS_URL!)
         .withAutomaticReconnect()
         .build();
 
@@ -76,7 +92,6 @@ export default function SignalRProvider({ children, user }: Props) {
     connection.current.on("BidPlaced", handleBidPlaced);
     connection.current.on("AuctionCreated", handleAuctionCreated);
     connection.current.on("AuctionFinished", handleAuctionFinished);
-
 
     return () => {
       if (connection.current) {
